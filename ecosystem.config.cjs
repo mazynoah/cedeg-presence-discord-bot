@@ -14,7 +14,7 @@ module.exports = {
     production: {
       user: 'pi',
       host: process.env.SERVER_IP,
-      ref: 'origin/master',
+      ref: 'origin/main',
       repo: 'git@github.com:mazynoah/cedeg-presence-discord-bot.git',
       path: '/home/pi/bots/cedeg',
       'pre-deploy-local': '',
