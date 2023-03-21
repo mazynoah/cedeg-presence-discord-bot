@@ -16,7 +16,7 @@ module.exports = {
       host: process.env.SERVER_IP,
       ref: 'origin/master',
       repo: 'git@github.com:mazynoah/cedeg-presence-discord-bot.git',
-      path: '/home/pi/bots/JarFish',
+      path: '/home/pi/bots/cedeg',
       'pre-deploy-local': '',
       'post-deploy': 'npm install && rm ./dist -rf && tsc --build tsconfig.json && pm2 reload ecosystem.config.cjs',
       'pre-setup': '',
