@@ -102,9 +102,12 @@ export default new Command({
             });
 
             await i.deferUpdate();
-        });;
+        });
 
         collector.on('end', (i) => {
+
+            console.log("Collector end");
+
 
             buttons.forEach(c => c.setDisabled(true));
 
