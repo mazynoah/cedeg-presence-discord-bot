@@ -14,7 +14,7 @@ export default new Command({
             description: "La durée pour laquelle la commande est active (en minutes)",
             type: ApplicationCommandOptionType.Integer,
             minValue: 0,
-            maxValue: 60,
+            maxValue: 15,
             required: true
         }
     ],
@@ -64,7 +64,7 @@ export default new Command({
         }) as Message<boolean>;
 
         const collector = message.createMessageComponentCollector({
-            componentType: ComponentType.Button, time: TIME * 60 * 1000
+            componentType: ComponentType.Button, time: TIME * 59 * 1000
         });
 
         collector.on('collect', async i => {

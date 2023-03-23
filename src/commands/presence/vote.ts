@@ -28,12 +28,21 @@ export default new Command({
             description: "Les differentes options possibles (séparer par un point virgule les options): first; second; third;",
             type: ApplicationCommandOptionType.String,
             required: true
+        },
+        {
+            name: "temps",
+            description: "La durée pour laquelle la commande est active (en minutes)",
+            type: ApplicationCommandOptionType.Integer,
+            minValue: 0,
+            maxValue: 15,
+            required: false
         }
     ],
     execute: async ({ bot, interaction }) => {
         await interaction.deferReply();
 
         const options = interaction.options.getString("options")!;
+        const TIME = interaction.options.getInteger('temps') ? interaction.options.getInteger('temps')! : 10;
 
         const optionsSlices = options
             .split(";")
@@ -58,6 +67,14 @@ export default new Command({
             );
         });
 
+        buttons.push(
+            new ButtonBuilder()
+                .setLabel(`Expire dans ${TIME} minutes`)
+                .setCustomId("expired")
+                .setStyle(ButtonStyle.Secondary)
+                .setDisabled(true)
+        );
+
         const actionRow = new ActionRowBuilder<ButtonBuilder>({ components: buttons });
 
         const embed = new EmbedBuilder()
@@ -72,10 +89,22 @@ export default new Command({
         }) as Message<boolean>;
 
         const collector = message.createMessageComponentCollector({
-            componentType: ComponentType.Button, time: 15 * 60 * 1000
+            componentType: ComponentType.Button, time: TIME * 59 * 1000
         });
 
         collector.on('collect', async i => {
+
+            if (i.customId == "expired") {
+                VOTES.delete(interaction.id!);
+                buttons.forEach(c => c.setDisabled(true));
+                buttons.find((c: any) => c.data.custom_id === "expired")?.setLabel(`Cancelled by user`);
+                collector.stop();
+
+                interaction.editReply({
+                    components: [actionRow.setComponents(buttons)]
+                });
+                return;
+            }
 
             const btnIndex = +i.customId.split('-')[1];
 
@@ -109,9 +138,10 @@ export default new Command({
             console.log("Collector end");
 
 
+            VOTES.delete(interaction.id!);
             buttons.forEach(c => c.setDisabled(true));
-
-            VOTES.delete(interaction.id);
+            buttons.find((c: any) => c.data.custom_id === "expired")?.setLabel(`Expiré apres ${collector.options.time! / 1000 / 60} minutes`);
+            collector.stop();
 
             interaction.editReply({
                 components: [actionRow.setComponents(buttons)]
